@@ -63,4 +63,4 @@ plot(x_reduced,y_reduced,'o');
  hold on
 plot(x_reduced+u_x_reduced,y_reduced+ u_y_reduced,'r.');
 
-%njkeflwsef
+%I made a new change to this crack finder file
