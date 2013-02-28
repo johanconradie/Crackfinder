@@ -18,9 +18,8 @@ u_y=disp(:,4);
          u_y(i) = 0;
          
     end
- end
-                                    %reference coordinates reduced y
-                                    %bounaries
+end
+
 for i = 1:length(y)
 
     if( y(i) >= 5 || y(i) <= -9)
@@ -32,8 +31,7 @@ for i = 1:length(y)
          
     end
 end
-
-counter1 = 1
+counter1 = 1;
 for i = 1:length(x)
     
     if( x(i) ~= 0 && y(i) ~= 0)
