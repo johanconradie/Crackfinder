@@ -12,7 +12,7 @@ u_y     = reduced_data(:,4);
 
 %plot( x, y ,'rx');                                                         %if the data is reduced the rows have to be counted for the damagedcoordinates function in order to plot the damage, I know it sucks, but I'm going to fix it later ;)
 
-[ lengths ] = NNsearch( reduced_data, 1.5);                                   %Nearest neighbour search, calculates bond lengths between nodes within a horizon alpha
+[ lengths ] = NNsearch( reduced_data, 1.5);                                 %Nearest neighbour search, calculates bond lengths between nodes within a horizon alpha
 
 current_coords = [x + u_x ,y + u_y ];                    
 
