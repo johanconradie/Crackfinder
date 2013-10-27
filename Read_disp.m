@@ -6,7 +6,7 @@ y=disp(:,2);
 u_x=disp(:,3);
 u_y=disp(:,4);
 
-%plot(x,y,'xr')
+plot(x,y,'xr')
 
                                     %reference coordinates reduced x
                                     %bounaries
