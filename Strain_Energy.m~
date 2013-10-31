@@ -1,0 +1,22 @@
+function [ Strain_Energy_Reduction ] = Strain_Energy( stretches, Elasticity, horizon, poisson )
+%Strain Energy Calculates the reduction in strain energy in each bond
+
+% description: function takes in stretches, Young's modulus of elasticity, material horizon  and Poisson's ratio of a material
+%              1) determines the micro-modulus,c , based on Gerstle et al
+%              2007. Then determines the strain energy in each bond
+
+% c = micromodulus
+% W = strain energy
+
+c = Elasticity/(3.14*horizon^3*(1-poisson);
+
+size = length(stretches)
+
+for i = 1:size
+
+    W(i) = 1/2*c*stretches(i)^2
+
+end
+
+end
+

@@ -3,7 +3,7 @@ clc;
 
 DICdata = load('B00400.txt');                                              %for graphite the coords is 25, -25,25,-25); 
 
-[reduced_data] = DataReducer(DICdata, 3,-5,5,-5);                      %reduce DIC data between x1,x2 and y1,y2 values of interest
+[reduced_data] = DataReducer_Zero_disp_remover(DICdata, 10,-9,8,-15);                     %reduce DIC data between x1,x2 and y1,y2 values of interest
                                                                            %for the B00400 series the coords 
 x       = reduced_data(:,1);                                               % are between 10,-15,10,-15);
 y       = reduced_data(:,2);
@@ -21,23 +21,22 @@ current_coords = [x + u_x ,y + u_y ];
 [ current_lengths ] = Currentbondlenghts( current_coords, lengths);        %determines the current lengths of the deformed bond lengths
 
 [ stretches, bonds ] = StretchCalculator(lengths, current_lengths );       %determines the stretch of deformed bonds
-bonds'
-stretches
-% [damage] = DamageCalculator(stretches, 0.02, bonds);                     %determines the damage by calculating Sum_broken_bonds/Sum_bonds
-% 
-% % damage'
-% %  figure(2)
-% % plot3(x,y,damage)
-% 
-% figure(3)
-%  [ X, Y, D] = DamagedCoordinates(damage, x, y , 44);                       %the output is 3 matrices to use for contour or surface plot, you need to count the rows of the original coordinates and then insert it here, currently it is 44 rows
-%                                                                            % for graphite value is 64 with coords as specified above
-%                                                                            % for steel value is 44 with coords as specified
-% surface(X,Y,D)
-% ylabel('x position (mm)')
-% xlabel('y position (mm)')
-% 
-% axis equal
+
+[damage] = DamageCalculator(stretches, 0.1, bonds);                     %determines the damage by calculating Sum_broken_bonds/Sum_bonds
+
+% damage'
+%  figure(2)
+% plot3(x,y,damage)
+
+figure(3)
+ [ X, Y, D] = DamagedCoordinates(damage, x, y , 41);                       %the output is 3 matrices to use for contour or surface plot, you need to count the rows of the original coordinates and then insert it here, currently it is 44 rows
+                                                                           % for graphite value is 64 with coords as specified above
+                                                                           % for steel value is 44 with coords as specified
+surface(X,Y,D)
+ylabel('x position (mm)')
+xlabel('y position (mm)')
+
+axis equal
 
 % %Alternative method to plot damage
 % 

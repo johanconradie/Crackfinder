@@ -2,7 +2,7 @@ clear;
 clc;
 tStart=tic;
 
-DICdata = load('B00025(para).txt');                                              %for graphite the coords is 25, -25,25,-25); 
+DICdata = load('B00030(perp).txt');                                        %for graphite the coords is 25, -25,25,-25); 
 
 [reduced_data] = DataReducer_Zero_disp_remover(DICdata, 25, -25,25,-25);                      %reduce DIC data between x1,x2 and y1,y2 values of interest
                                                                            %for the B00400 series the coords 
@@ -18,15 +18,14 @@ u_y     = reduced_data(:,4);
 % plot(x,y,'.b')
 
 
-%   HORIZON SPECIFICATION
-delta_x = 0.5656;
+%   HORIZON SPECIFICATION (Have to change between steel and graphite)
+delta_x = 0.5775;
 horizon = delta_x*3;
 
-[ lengths ] = NNsearch( reduced_data, horizon);                                  %Nearest neighbour search, calculates bond lengths between nodes within a horizon alpha
-
+[ lengths ] = NNsearch( reduced_data, horizon);                            %Nearest neighbour search, calculates bond lengths between nodes within a horizon alpha
 size = length(lengths)
 
-for i = 1:size                                                              % Adjacent matrix, 1 if in neighbourhood 0 not
+for i = 1:size                                                             % Adjacent matrix, 1 if in neighbourhood 0 not
     for j = 1:size
         
         if(lengths(i,j) ~= 0)
@@ -36,13 +35,15 @@ for i = 1:size                                                              % Ad
     end
 end
 
+
 current_coords = [x + u_x ,y + u_y ];
 
 % [xx yy] = gplot(adj, [x y]);
-% subplot(1, 3 ,1)
+% % subplot(1, 3 ,1)
 % plot(xx, yy, '-o', 'MarkerFaceColor','r')
-% title('Reference state');         
-% 
+% title('Reference state','fontsize',15);      
+% ylabel('x position (mm)','fontsize',15);
+
 % [xu yu] = gplot(adj, [current_coords]);
 % subplot(1, 3,2)
 % plot(xu, yu, '-o', 'MarkerFaceColor','r')
@@ -53,8 +54,8 @@ current_coords = [x + u_x ,y + u_y ];
 
 [ stretches, bonds ] = StretchCalculator(lengths, current_lengths );       %determine the stretch of deformed bonds
 
-
-critical_stretch = 0.07
+% CRITICAL STRETCH
+critical_stretch = 0.08
 
 for i = 1:size
     for j = 1:size
@@ -62,20 +63,28 @@ for i = 1:size
         if(stretches(i,j) >= critical_stretch)
             
             adj(i,j) = 0;
-%             adj_2(i,j) = 1;
+             adj_2(i,j) = 1;
         end
     end
 end
 
 %BROKEN BOND PLOT THAT REVEALS CRACKS
 
+% [xu yu] = gplot(adj, [current_coords]);
+% % subplot(1, 3,2)
+% plot(xu, yu, '-o', 'MarkerFaceColor','r')
+% title('Deformed state','fontsize',15);    
+% xlabel('y position (mm)','fontsize',15);
+
 [xu yu] = gplot(adj, [current_coords]);
 % subplot(1, 3,3)
 plot(xu, yu, '-o', 'MarkerFaceColor','r')
-% hold on
-% [xu yu] = gplot(adj_2, [current_coords]);
-% % subplot(1, 3,3)
-% plot(xu, yu, '-o', 'MarkerFaceColor','g')
+hold on
+[xu yu] = gplot(adj_2, [current_coords]);
+% subplot(1, 3,3)
+plot(xu, yu, '-g', 'MarkerFaceColor','g')
+title('Deformed state with broken bonds','fontsize',15);    
+
 
 %DAMAGE PLOT
 
