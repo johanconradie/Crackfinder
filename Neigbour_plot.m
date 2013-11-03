@@ -4,7 +4,8 @@ tStart=tic;
 
 DICdata = load('B00030(perp).txt');                                        %for graphite the coords is 25, -25,25,-25); 
 
-[reduced_data] = DataReducer_Zero_disp_remover(DICdata, 25, -25,25,-25);                      %reduce DIC data between x1,x2 and y1,y2 values of interest
+[reduced_data] = DataReducer(DICdata, 15, -17,10,-10);
+% [reduced_data] = DataReducer_Zero_disp_remover(DICdata, 25, -25,25,-25);                      %reduce DIC data between x1,x2 and y1,y2 values of interest
                                                                            %for the B00400 series the coords 
 x       = reduced_data(:,1);                                               % are between 10,-15,10,-15);
 y       = reduced_data(:,2);
@@ -12,13 +13,12 @@ u_x     = reduced_data(:,3);
 u_y     = reduced_data(:,4);
 
 % figure(1)
-% subplot(1, 3, 1)
 % plot( x + u_x, y + u_y ,'rx')                                            %if the data is reduced the rows have to be counted for the damagedcoordinates function in order to plot the damage, I know it sucks, but I'm going to fix it later ;)
 % hold on
 % plot(x,y,'.b')
 
 
-%   HORIZON SPECIFICATION (Have to change between steel and graphite)
+%   HORIZON SPECIFICATION (Have to change between steel and graphite)************************************************
 delta_x = 0.5775;
 horizon = delta_x*3;
 
@@ -39,11 +39,11 @@ end
 current_coords = [x + u_x ,y + u_y ];
 
 % [xx yy] = gplot(adj, [x y]);
-% % subplot(1, 3 ,1)
+% subplot(1, 3 ,1)
 % plot(xx, yy, '-o', 'MarkerFaceColor','r')
 % title('Reference state','fontsize',15);      
 % ylabel('x position (mm)','fontsize',15);
-
+% 
 % [xu yu] = gplot(adj, [current_coords]);
 % subplot(1, 3,2)
 % plot(xu, yu, '-o', 'MarkerFaceColor','r')
@@ -54,10 +54,17 @@ current_coords = [x + u_x ,y + u_y ];
 
 [ stretches, bonds ] = StretchCalculator(lengths, current_lengths );       %determine the stretch of deformed bonds
 
-% CRITICAL STRETCH
-critical_stretch = 0.08
+% CRITICAL STRETCH ************************************************************************************
+critical_stretch = 0.06
 
-for i = 1:size
+%STRAIN ENERGY************************************************************************************
+Elasticity = 11560000;
+poisson = 0.2
+
+[Effective_micromodulus, c, W, W_reduced] = Strain_Energy(stretches, lengths ,Elasticity, horizon, poisson, critical_stretch);
+
+%ADJECENT MATRIX FOR 1 = BONDS, MAKE 0 IF = BROKEN****************************************** 
+for i = 1:size                                                              %adjacent matrix full 1's and zeros
     for j = 1:size
         
         if(stretches(i,j) >= critical_stretch)
@@ -68,34 +75,37 @@ for i = 1:size
     end
 end
 
-%BROKEN BOND PLOT THAT REVEALS CRACKS
-
+%BROKEN BOND PLOT THAT REVEALS CRACKS ***************************
+% 
 % [xu yu] = gplot(adj, [current_coords]);
-% % subplot(1, 3,2)
+% subplot(1, 3,2)
 % plot(xu, yu, '-o', 'MarkerFaceColor','r')
 % title('Deformed state','fontsize',15);    
 % xlabel('y position (mm)','fontsize',15);
-
-[xu yu] = gplot(adj, [current_coords]);
+% 
+% [xu yu] = gplot(adj, [current_coords]);
 % subplot(1, 3,3)
-plot(xu, yu, '-o', 'MarkerFaceColor','r')
-hold on
-[xu yu] = gplot(adj_2, [current_coords]);
+% plot(xu, yu, '-o', 'MarkerFaceColor','r')
+% hold on
+% [xu yu] = gplot(adj_2, [current_coords]);
 % subplot(1, 3,3)
-plot(xu, yu, '-g', 'MarkerFaceColor','g')
-title('Deformed state with broken bonds','fontsize',15);    
+% plot(xu, yu, '-g', 'MarkerFaceColor','g')
+% title('Deformed state with broken bonds','fontsize',15);    
 
 
-%DAMAGE PLOT
+%DAMAGE PLOT ****************************************************
 
 % [damage] = DamageCalculator(stretches, 0.08, bonds);                     %determine the damage by calculating Sum_broken_bonds/Sum_bonds
 % figure(3)
 %  [ X, Y, D] = DamagedCoordinates(damage, x, y , 44);                       %the output is 3 matrices to use for contour or surface plot, you need to count the rows of the original coordinates and then insert it here, currently it is 44 rows
                                                                             % for graphite value is 64 with coords as specified above                                                                          % for steel value is 44 with coords as specified
-% surface(X,Y,D)
-% ylabel('x position (mm)')
-% xlabel('y position (mm)')
-% axis equal
+figure (2)
 
+[ X, Y, D] = DamagedCoordinates(Effective_micromodulus, x, y , 35);
+title('Damage','fontsize',12);
+surface(X,Y,D)                                                                               
+ylabel('x position (mm)','fontsize',10)
+xlabel('y position (mm)','fontsize',10)
+axis equal
 
 time_seconds =toc(tStart)
