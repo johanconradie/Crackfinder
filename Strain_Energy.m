@@ -1,4 +1,4 @@
-function [ Effective_micromodulus, c, Sum_W, Sum_W_reduced ] = Strain_Energy( stretches,lengths, Elasticity, horizon, poisson, critical_stretch )
+function [ Effective_micromodulus, Effective_Elasticity, c, Sum_W, Sum_W_reduced ] = Strain_Energy( stretches,lengths, Elasticity, horizon, poisson, critical_stretch )
 %Strain Energy Calculates the reduction in strain energy in each bond
 
 % description: function takes in stretches, Young's modulus of elasticity, material horizon  and Poisson's ratio of a material
@@ -8,7 +8,7 @@ function [ Effective_micromodulus, c, Sum_W, Sum_W_reduced ] = Strain_Energy( st
 % c = micromodulus
 % W = strain energy
 
-c = Elasticity/(3.14*horizon^3*(1-poisson));
+c = 6*Elasticity/(3.14*horizon^3*(1-poisson));
 
 size = length(stretches)
 
@@ -49,7 +49,7 @@ end
 for i = 1:size
 
     Effective_micromodulus(i) = (Sum_W(i)-Sum_W_reduced(i))/Sum_W(i);
-
+    Effective_Elasticity(i) = Elasticity*(1-Effective_micromodulus(i));
 end
 
 end
