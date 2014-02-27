@@ -1,4 +1,4 @@
-function [ lengths ] = NNsearch( A, alpha )
+function [ lengths ] = NNsearch( A, delta )
 %Nearest Neighbour search
 %   This function takes in a data matrix (A) with x and y co-ordinates and
 %   lengths alpha, and calculates the neighbours of each node within the
@@ -22,7 +22,7 @@ for i= 1:num_cells
         
         lengths(i,j) = L;
                
-        if(L > alpha)
+        if(L > delta)
                  
             lengths(i,j) = 0;
         end
